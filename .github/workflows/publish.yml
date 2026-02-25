@@ -30,7 +30,7 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
-          # التعديل هنا: نرفع الملفات التي تنتهي بـ .whl فقط
+          # التعديل هنا: نرفع الملفا#ت التي تنتهي بـ .whl فقط
           if [ -d "dist" ]; then
             twine upload dist/*.whl --skip-existing --verbose
           else
