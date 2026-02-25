@@ -1,39 +1,20 @@
-name: Upload to PyPI
+name: Publish to PyPI
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
   workflow_dispatch:
 
 jobs:
-  pypi-publish:
-    name: Upload Wheel only
+  build-and-publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
-
-      - name: Install Twine
-        run: pip install twine
-
-      - name: Publish Wheel to PyPI
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          # التعديل هنا: نرفع الملفا#ت التي تنتهي بـ .whl فقط
-          if [ -d "dist" ]; then
-            twine upload dist/*.whl --skip-existing --verbose
-          else
-            echo "Error: dist folder not found!"
-            exit 1
-          fi
+          python-version: '3.x'
+      - run: python -m pip install --upgrade pip setuptools wheel
+      - run: python setup.py sdist bdist_wheel
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
